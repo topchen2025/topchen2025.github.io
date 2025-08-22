@@ -1,179 +1,197 @@
 <!doctype html>
-<html lang="zh-Hans" data-theme>
+<html lang="zh-Hans" class="no-js">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DevCast · 开发风格播客</title>
-  <meta name="description" content="一个面向开发者的极简播客主页，暗色主题、键盘快捷键、离散组件。" />
-  <meta name="theme-color" content="#0b0f12" />
+  <title>DevCast — WordPress风格播客</title>
+  <meta name="description" content="一个 WordPress 风格的播客首页：文章卡片、两栏侧边、分页与搜索。可直接部署到 GitHub Pages。" />
+  <meta name="theme-color" content="#2271b1" />
   <link rel="alternate" type="application/rss+xml" title="DevCast RSS" href="feed.xml" />
   <style>
+    /* —— 基础调色，参考 WordPress 默认蓝 —— */
     :root{
-      --bg: #0b0f12;           /* 背景 */
-      --panel: #0f1419;        /* 卡片背景 */
-      --fg: #e6edf3;           /* 正文 */
-      --muted: #9da8b3;        /* 次要文字 */
-      --line: #1b2026;         /* 细线 */
-      --accent: #00ff88;       /* 赛博绿 */
-      --accent-2: #7cffd3;     /* 备用高亮 */
-      --danger: #ff5d5d;
-      --radius: 14px;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --bg:#f6f7f7;      /* 页面底色 */
+      --paper:#ffffff;   /* 内容卡片 */
+      --ink:#111827;     /* 正文 */
+      --muted:#6b7280;   /* 次要 */
+      --line:#e5e7eb;    /* 细线 */
+      --primary:#2271b1; /* WP 蓝 */
+      --primary-600:#135e96;
+      --accent:#ffc107;  /* 强调 */
+      --radius:14px;
+      --shadow: 0 10px 30px rgba(0,0,0,.06);
     }
-    @media (prefers-color-scheme: light){
-      :root{
-        --bg:#f6f8fa; --panel:#ffffff; --fg:#0e1116; --muted:#57606a; --line:#e6edf3;
-      }
-      body { background-image: radial-gradient(1000px 600px at 10% 0, #eaf2ff 0%, transparent 60%); }
+    @media (prefers-color-scheme: dark){
+      :root{--bg:#0b0f12; --paper:#0f1419; --ink:#e6edf3; --muted:#9da8b3; --line:#1b2026; --shadow:0 10px 30px rgba(0,0,0,.35)}
     }
-    *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0; background:var(--bg); color:var(--fg);
-      font: 16px/1.6 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "JetBrains Mono", monospace;
-      letter-spacing:.2px;
-    }
-    a{color:var(--accent); text-decoration:none}
-    a:hover{color:var(--accent-2);}
+    body{ margin:0; background:var(--bg); color:var(--ink); font:16px/1.7 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei UI", sans-serif; }
+    img{max-width:100%; height:auto; display:block}
+    a{color:var(--primary); text-decoration:none}
+    a:hover{color:var(--primary-600)}
+    code,kbd,pre,samp{font-family:ui-monospace, Menlo, Monaco, Consolas, "JetBrains Mono", monospace}
 
-    /* 顶部导航 */
-    .nav{
-      position:sticky; top:0; z-index:10; backdrop-filter: blur(8px);
-      background: color-mix(in srgb, var(--bg) 70%, transparent);
-      border-bottom:1px solid var(--line);
-    }
-    .container{max-width:1000px; margin:0 auto; padding:16px 20px}
-    .row{display:flex; align-items:center; gap:14px}
-    .brand{display:flex; align-items:center; gap:10px; font-weight:700}
-    .logo{
-      width:28px; height:28px; display:grid; place-items:center; border-radius:8px;
-      background: linear-gradient(135deg, var(--accent) 0%, #0affc2 100%);
-      color:#001a10; font-weight:900; box-shadow: var(--shadow);
-    }
-    .spacer{flex:1}
-    .btn{
-      border:1px solid var(--line); background:var(--panel); color:var(--fg);
-      padding:8px 12px; border-radius:10px; cursor:pointer; transition:.15s ease-in-out;
-    }
-    .btn:hover{transform: translateY(-1px); border-color: color-mix(in srgb, var(--accent) 35%, var(--line));}
-    .btn-ghost{background:transparent}
+    .site{max-width:1200px; margin:0 auto; padding:0 20px}
+    .site-header{position:sticky; top:0; z-index:10; background:linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.7)); backdrop-filter: blur(8px); border-bottom:1px solid var(--line)}
+    @media (prefers-color-scheme: dark){ .site-header{ background:linear-gradient(180deg, rgba(15,20,25,.85), rgba(15,20,25,.65)); } }
+    .header-inner{display:flex; align-items:center; gap:20px; padding:14px 0}
+    .site-branding{display:flex; align-items:center; gap:12px}
+    .site-title{font-weight:800; letter-spacing:.2px}
+    .site-description{color:var(--muted); font-size:14px}
+    .site-logo{width:36px; height:36px; border-radius:8px; display:grid; place-items:center; background:#fff; border:2px solid var(--primary); color:var(--primary); font-weight:900}
 
-    /* 头图 */
-    .hero{border-bottom:1px solid var(--line); background:radial-gradient(750px 300px at 85% -40%, rgba(0,255,136,.07), transparent 60%)}
-    .hero h1{font-size:32px; margin:6px 0 8px}
-    .hero p{margin:0; color:var(--muted)}
+    .primary-menu{display:flex; gap:14px; margin-left:auto; align-items:center}
+    .menu a{padding:8px 10px; border-radius:8px}
+    .menu a[aria-current="page"], .menu a:hover{background:color-mix(in srgb, var(--primary) 12%, transparent);}
 
-    /* 搜索栏 */
-    .search{display:flex; gap:10px; align-items:center; margin:16px 0 0}
-    .search input{
-      flex:1; border-radius:12px; border:1px solid var(--line); padding:12px 14px 12px 42px;
-      background:var(--panel); color:var(--fg); outline:none;
-    }
-    .search .kbd{
-      position:absolute; margin-left:10px; color:var(--muted); pointer-events:none
-    }
+    .search-form{display:flex; align-items:center; gap:8px; background:var(--paper); border:1px solid var(--line); padding:8px 10px; border-radius:10px}
+    .search-form input{background:transparent; border:none; outline:none; color:inherit; width:200px}
 
-    /* 列表 */
-    .list{display:grid; gap:14px; margin:20px 0 60px}
-    .card{
-      display:grid; grid-template-columns: 1fr; gap:10px; padding:14px; border-radius: var(--radius);
-      background:var(--panel); border:1px solid var(--line); box-shadow: var(--shadow);
-    }
-    .meta{display:flex; gap:12px; align-items:center; color:var(--muted); font-size:13px}
-    .tag{display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); margin-right:6px}
-    .title{font-size:18px; font-weight:700; margin:2px 0}
-    audio{ width:100%; height:36px; }
-    .actions{display:flex; gap:10px; align-items:center}
+    .layout{display:grid; grid-template-columns: minmax(0,1fr) 320px; gap:26px; margin:24px 0}
+    @media (max-width: 980px){ .layout{grid-template-columns: 1fr} }
 
-    /* 页脚 */
-    footer{border-top:1px solid var(--line); color:var(--muted)}
+    .content-area{display:grid; gap:18px}
+    .post{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .post .post-inner{padding:16px}
+    .post .entry-title{font: 700 22px/1.35 Georgia, "Times New Roman", Times, serif; margin:6px 0 8px}
+    .post .entry-meta{display:flex; flex-wrap:wrap; gap:10px; color:var(--muted); font-size:13px}
+    .entry-meta .sep{margin:0 4px; color:var(--line)}
+    .post-thumbnail{aspect-ratio: 16/9; background:linear-gradient(135deg, #dde7f3, #f7fafc); border-bottom:1px solid var(--line)}
+    @media (prefers-color-scheme: dark){ .post-thumbnail{ background:linear-gradient(135deg, #0f2236, #0b0f12) } }
 
-    /* 快捷键提示层 */
-    .hotkeys{
-      position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.6);
-    }
-    .hotkeys .panel{
-      width:min(720px, 92vw); background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px;
-    }
-    .hotkeys table{width:100%; border-collapse:collapse}
-    .hotkeys td{padding:6px 8px; border-bottom:1px dashed var(--line); color:var(--muted)}
-    .kbd-inline{display:inline-block; padding:0 6px; border:1px solid var(--line); border-bottom-width:2px; border-radius:6px; margin:0 2px}
+    figure.wp-block-audio{margin:10px 0 0}
+    audio{ width:100%; height:36px }
 
-    /* 选中高亮 */
-    .card[aria-current="true"]{ outline:2px solid var(--accent); box-shadow:0 0 0 3px rgba(0,255,136,.15), var(--shadow)}
+    .more-link, .button{display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:10px; border:1px solid var(--line); background:var(--paper)}
+    .button.primary{background:var(--primary); color:#fff; border-color:transparent}
+    .button.primary:hover{background:var(--primary-600)}
 
-    /* 小屏优化 */
-    @media (min-width: 720px){
-      .hero h1{font-size:38px}
-      .card{grid-template-columns: auto 1fr}
-      .title{font-size:20px}
-    }
+    .tags-links a, .cat-links a{display:inline-block; padding:2px 8px; margin:0 6px 6px 0; border:1px solid var(--line); border-radius:999px; color:var(--muted)}
+    .tags-links a:hover, .cat-links a:hover{border-color:var(--primary); color:var(--primary)}
+
+    /* 侧边栏 */
+    .widget-area{display:grid; gap:18px}
+    .widget{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow)}
+    .widget .widget-inner{padding:14px}
+    .widget-title{margin:0 0 8px; font:700 16px/1.4 Georgia, "Times New Roman", Times, serif}
+    .tag-cloud a{margin:6px 8px 0 0; display:inline-block}
+
+    /* 分页 */
+    .pagination{display:flex; justify-content:space-between; align-items:center; gap:10px; margin:4px 0 24px}
+    .nav-links a{padding:8px 12px; border:1px solid var(--line); border-radius:10px; background:var(--paper)}
+    .nav-links a[aria-disabled="true"]{opacity:.5; pointer-events:none}
+
+    .site-footer{border-top:1px solid var(--line); color:var(--muted); padding:16px 0 40px}
+
+    .screen-reader-text{position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
   </style>
 </head>
 <body>
-  <header class="nav">
-    <div class="container row">
-      <div class="brand" title="返回首页">
-        <div class="logo">▶</div>
-        <div>
-          <div>DevCast</div>
-          <small style="color:var(--muted)">开发者风格播客</small>
-        </div>
+  <div class="site">
+    <header class="site-header" role="banner">
+      <div class="header-inner">
+        <a class="site-branding" href="#" rel="home">
+          <span class="site-logo">▶</span>
+          <div>
+            <div class="site-title">DevCast</div>
+            <div class="site-description">WordPress 风格 · 播客</div>
+          </div>
+        </a>
+        <nav class="primary-menu menu" aria-label="主菜单">
+          <a href="#" aria-current="page">首页</a>
+          <a href="#episodes">全部节目</a>
+          <a href="#about">关于</a>
+          <a href="feed.xml" title="RSS">订阅</a>
+        </nav>
+        <form class="search-form" role="search" onsubmit="event.preventDefault()">
+          <label class="screen-reader-text" for="s">搜索</label>
+          <svg width="16" height="16" aria-hidden="true" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input id="s" type="search" placeholder="搜索标题 / 摘要 / 标签" autocomplete="off" />
+        </form>
       </div>
-      <div class="spacer"></div>
-      <button id="themeToggle" class="btn btn-ghost" title="切换主题 (t)">☾/☀</button>
-      <a class="btn" href="feed.xml" title="订阅 RSS">RSS</a>
-      <button id="helpBtn" class="btn btn-ghost" title="快捷键 (Shift + /)">?</button>
-    </div>
-  </header>
+    </header>
 
-  <section class="hero">
-    <div class="container">
-      <h1>你好，开发者 👋</h1>
-      <p>这是一个不依赖任何框架的静态播客首页：暗色优先、键盘可操作、只有一份 <code>index.html</code>。把它放进 GitHub Pages 即可上线。</p>
-      <div class="search">
-        <span class="kbd">/</span>
-        <input id="search" type="search" placeholder="搜索：标题、标签或摘要（按 / 聚焦）" autocomplete="off" />
+    <main id="content" class="layout" role="main">
+      <section class="content-area">
+        <div id="loop" class="posts"></div>
+        <nav class="navigation pagination" role="navigation" aria-label="文章导航">
+          <h2 class="screen-reader-text">文章导航</h2>
+          <div class="nav-links">
+            <a id="prevPage" class="prev page-numbers" href="#">较新文章</a>
+            <span id="pageIndicator" style="color:var(--muted)"></span>
+            <a id="nextPage" class="next page-numbers" href="#">更早文章</a>
+          </div>
+        </nav>
+      </section>
+
+      <aside class="widget-area" role="complementary">
+        <section class="widget">
+          <div class="widget-inner">
+            <h2 class="widget-title">订阅</h2>
+            <p>通过 RSS 订阅最新节目：</p>
+            <a class="button primary" href="feed.xml">RSS Feed</a>
+          </div>
+        </section>
+        <section class="widget">
+          <div class="widget-inner">
+            <h2 class="widget-title">分类</h2>
+            <div id="cats" class="cat-links"></div>
+          </div>
+        </section>
+        <section class="widget">
+          <div class="widget-inner">
+            <h2 class="widget-title">归档</h2>
+            <ul id="archives" style="padding-left:18px; margin:0"></ul>
+          </div>
+        </section>
+        <section class="widget">
+          <div class="widget-inner">
+            <h2 class="widget-title">标签云</h2>
+            <p id="tagCloud" class="tag-cloud"></p>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site">
+        <small>© <span id="year"></span> DevCast · 外观致敬 WordPress · 部署于 GitHub Pages</small>
       </div>
-    </div>
-  </section>
-
-  <main class="container">
-    <div id="list" class="list" role="list" aria-label="节目列表"></div>
-  </main>
-
-  <footer class="container" style="padding-bottom:60px">
-    <p>© <span id="year"></span> DevCast · 以 <span style="color:var(--accent)">开发者体验</span> 为中心构建。
-      | <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
-      | <a href="#" id="exportJson">导出 JSON</a>
-    </p>
-  </footer>
-
-  <!-- 快捷键帮助 -->
-  <div id="hotkeys" class="hotkeys" aria-hidden="true">
-    <div class="panel">
-      <h3 style="margin:6px 0 10px">键盘快捷键</h3>
-      <table>
-        <tr><td><span class="kbd-inline">/</span></td><td>聚焦搜索</td></tr>
-        <tr><td><span class="kbd-inline">j</span> / <span class="kbd-inline">k</span></td><td>上下选择节目</td></tr>
-        <tr><td><span class="kbd-inline">空格</span> 或 <span class="kbd-inline">Enter</span></td><td>播放/暂停选中节目</td></tr>
-        <tr><td><span class="kbd-inline">t</span></td><td>切换深浅色</td></tr>
-        <tr><td><span class="kbd-inline">g</span> <span class="kbd-inline">g</span></td><td>回到顶部</td></tr>
-        <tr><td><span class="kbd-inline">Shift</span> + <span class="kbd-inline">/</span></td><td>显示/关闭本帮助</td></tr>
-      </table>
-    </div>
+    </footer>
   </div>
 
-  <!-- 你的播客数据：修改即可个性化（也可替换为外部 JSON 再用 fetch 加载） -->
+  <!-- 数据：你可以替换为自己的节目清单（也可外链 JSON 再用 fetch 加载） -->
   <script id="data" type="application/json">{
     "site": {
       "title": "DevCast",
-      "subtitle": "开发者风格播客",
-      "description": "谈技术、聊产品，也聊作为开发者的职业思考。",
+      "description": "WordPress 风格播客",
       "author": "Your Name",
       "links": { "github": "https://github.com/yourname" }
     },
+    "settings": { "perPage": 5 },
     "episodes": [
+      {
+        "id": "ep-003",
+        "title": "边界与成本：何时该“写个小服务”？",
+        "date": "2025-05-18",
+        "duration": "36:42",
+        "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
+        "summary": "工程实践中的复用、封装与 SLA 思维。",
+        "tags": ["architecture", "practice"],
+        "category": "Architecture",
+        "cover": ""
+      },
+      {
+        "id": "ep-002",
+        "title": "从脚手架到 DX：开发体验的四个层次",
+        "date": "2025-02-02",
+        "duration": "28:15",
+        "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+        "summary": "聊聊 CLI、模板、DevServer、热更新与错误反馈。",
+        "tags": ["dx", "tooling"],
+        "category": "DX",
+        "cover": ""
+      },
       {
         "id": "ep-001",
         "title": "Hello, World：为什么是另一个播客？",
@@ -181,196 +199,186 @@
         "duration": "12:34",
         "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
         "summary": "开场白：定位、选题和我们想传递的价值。",
-        "tags": ["intro", "meta"]
-      },
-      {
-        "id": "ep-002",
-        "title": "从脚手架到DX：开发体验的四个层次",
-        "date": "2025-02-02",
-        "duration": "28:15",
-        "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-        "summary": "聊聊CLI、模版、DevServer、热更新与错误反馈。",
-        "tags": ["dx", "tooling"]
-      },
-      {
-        "id": "ep-003",
-        "title": "边界与成本：何时该“写个小服务”？",
-        "date": "2025-05-18",
-        "duration": "36:42",
-        "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
-        "summary": "工程实践中的复用、封装与SLA思维。",
-        "tags": ["architecture", "practice"]
+        "tags": ["intro", "meta"],
+        "category": "Meta",
+        "cover": ""
       }
     ]
   }</script>
 
+  <!-- 结构化数据（可选）：PodcastSeries 基本信息 -->
+  <script type="application/ld+json" id="ld-series"></script>
+
   <script>
-    // ===== 工具函数 =====
+    // 工具
     const $ = (sel, el=document) => el.querySelector(sel);
     const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
-    const fmt = (d) => new Date(d + 'T00:00:00').toLocaleDateString(undefined, {year:'numeric', month:'short', day:'numeric'});
-    const byId = id => document.getElementById(id);
-    const storage = {
-      get(k, def){ try { return JSON.parse(localStorage.getItem(k)) ?? def } catch { return def } },
-      set(k, v){ localStorage.setItem(k, JSON.stringify(v)) }
-    };
+    const fmtDate = (d) => new Date(d + 'T00:00:00').toLocaleDateString(undefined, {year:'numeric', month:'short', day:'numeric'});
 
-    // ===== 主题切换 =====
-    const THEME_KEY = 'devcast.theme';
-    function applyTheme(theme){
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const isDark = theme ? (theme==='dark') : prefersDark;
-      document.documentElement.toggleAttribute('data-theme', true);
-      document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
-      document.body.dataset.theme = isDark ? 'dark' : 'light';
+    // 数据
+    const data = JSON.parse(document.getElementById('data').textContent);
+    const perPage = data.settings?.perPage ?? 5;
+    document.title = `${data.site.title} — WordPress风格播客`;
+    $('.site-title').textContent = data.site.title;
+    $('.site-description').textContent = data.site.description;
+
+    // 渲染器
+    function placeholderSVG(title='Episode'){
+      return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 675' preserveAspectRatio='xMidYMid slice'>
+        <defs>
+          <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0' stop-color='#dde7f3'/>
+            <stop offset='1' stop-color='#f7fafc'/>
+          </linearGradient>
+        </defs>
+        <rect width='1200' height='675' fill='url(#g)'/>
+        <g font-family='system-ui, -apple-system, Segoe UI, Roboto, Helvetica' fill='#135e96'>
+          <text x='48' y='120' font-size='54' font-weight='700'>${title}</text>
+          <text x='48' y='180' font-size='28' opacity='.7'>DevCast • Podcast</text>
+        </g>
+      </svg>`;
     }
 
-    // ===== 渲染节目列表 =====
-    const data = JSON.parse(byId('data').textContent);
-    document.title = `${data.site.title} · 开发风格播客`;
-    $('.brand div:first-child + small').textContent = data.site.subtitle;
+    function episodeHTML(ep){
+      const cover = ep.cover ? `<img class="post-thumbnail" src="${ep.cover}" alt="${ep.title}">` : `<div class="post-thumbnail">${placeholderSVG(ep.title)}</div>`;
+      const tags = (ep.tags||[]).map(t=>`<a href="#" data-tag="${t}">#${t}</a>`).join('');
+      const cats = ep.category ? `<a href="#" data-cat="${ep.category}">${ep.category}</a>` : '';
 
-    const listEl = byId('list');
-    let selectedIndex = 0;
-    let audios = [];
-
-    function episodeCard(ep){
-      const el = document.createElement('article');
-      el.className = 'card';
-      el.id = ep.id;
-      el.setAttribute('role','listitem');
-      el.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:6px">
-          <div class="meta">
-            <span title="发布日期">🗓️ ${fmt(ep.date)}</span>
-            <span title="时长">⏱️ ${ep.duration}</span>
-            <span class="tags">${(ep.tags||[]).map(t=>`<span class=tag>#${t}</span>`).join('')}</span>
-          </div>
-          <h3 class="title">${ep.title}</h3>
-          <p style="margin:0; color:var(--muted)">${ep.summary||''}</p>
-          <div class="actions">
-            <audio preload="none" controls src="${ep.audio}" data-id="${ep.id}"></audio>
-            <button class="btn btn-ghost copy" title="复制音频地址">复制链接</button>
-            <a class="btn" href="${ep.audio}" download>下载</a>
-          </div>
+      return `
+      <article id="${ep.id}" class="post type-podcast hentry" itemscope itemtype="https://schema.org/PodcastEpisode">
+        ${cover}
+        <div class="post-inner">
+          <header class="entry-header">
+            <h2 class="entry-title" itemprop="name"><a href="#${ep.id}" rel="bookmark">${ep.title}</a></h2>
+            <div class="entry-meta">
+              <span class="posted-on">🗓️ <time datetime="${ep.date}" itemprop="datePublished">${fmtDate(ep.date)}</time></span>
+              <span class="sep">•</span>
+              <span class="byline">⏱️ ${ep.duration}</span>
+              ${ep.category ? `<span class="sep">•</span><span class="cat-links">分类：${cats}</span>`:''}
+            </div>
+          </header>
+          <div class="entry-summary" itemprop="description">${ep.summary||''}</div>
+          <figure class="wp-block-audio"><audio preload="none" controls src="${ep.audio}" itemprop="associatedMedia" data-id="${ep.id}"></audio></figure>
+          <p class="tags-links">${tags}</p>
+          <p><a class="more-link" href="#${ep.id}" data-scroll>继续阅读 <span class="screen-reader-text">${ep.title}</span> →</a> <a class="button" href="${ep.audio}" download>下载音频</a></p>
+          <meta itemprop="url" content="${location.href.split('#')[0]}#${ep.id}" />
+          <meta itemprop="timeRequired" content="PT${(ep.duration||'0:00').replace(':','M')}S" />
         </div>
-      `;
-      return el;
+      </article>`;
     }
 
-    function render(filter=''){
-      listEl.innerHTML = '';
-      const q = filter.trim().toLowerCase();
-      const filtered = data.episodes.filter(ep=>{
-        if(!q) return true;
-        const inText = [ep.title, ep.summary, ...(ep.tags||[])].join(' ').toLowerCase();
-        return inText.includes(q);
-      });
-      filtered.sort((a,b)=> new Date(b.date) - new Date(a.date));
-      filtered.forEach(ep=> listEl.appendChild(episodeCard(ep)));
-      audios = $$('audio', listEl);
-      audios.forEach(wireAudio);
-      if(filtered.length){
-        const hashId = location.hash.slice(1);
-        const idx = filtered.findIndex(e=> e.id===hashId);
-        selectedIndex = Math.max(0, idx);
-        setSelected(selectedIndex);
-      }
+    // 列表、分页与筛选
+    const loopEl = document.getElementById('loop');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+    const searchInput = document.getElementById('s');
+
+    let filtered = [...data.episodes].sort((a,b)=> new Date(b.date) - new Date(a.date));
+
+    function renderPage(page=1){
+      const total = filtered.length;
+      const pages = Math.max(1, Math.ceil(total / perPage));
+      page = Math.min(Math.max(1, page), pages);
+      const start = (page-1)*perPage;
+      const items = filtered.slice(start, start+perPage);
+      loopEl.innerHTML = items.map(episodeHTML).join('');
+      pageIndicator.textContent = `${page} / ${pages}`;
+      prevBtn.setAttribute('aria-disabled', page===1);
+      nextBtn.setAttribute('aria-disabled', page===pages);
+      prevBtn.onclick = (e)=>{ e.preventDefault(); if(page>1){ setPage(page-1) } };
+      nextBtn.onclick = (e)=>{ e.preventDefault(); if(page<pages){ setPage(page+1) } };
+      // 事件：标签/分类筛选、保存进度
+      $$('#loop audio').forEach(wireAudioProgress);
+      $$('#loop .tags-links a').forEach(a=> a.addEventListener('click', (e)=>{ e.preventDefault(); filterByTag(a.dataset.tag) }));
+      $$('#loop .cat-links a').forEach(a=> a.addEventListener('click', (e)=>{ e.preventDefault(); filterByCat(a.dataset.cat) }));
+      $$('#loop a[data-scroll]').forEach(a=> a.addEventListener('click', (e)=>{ e.preventDefault(); document.getElementById(a.getAttribute('href').slice(1))?.scrollIntoView({behavior:'smooth', block:'center'}) }))
     }
 
-    function setSelected(i){
-      const cards = $$('.card', listEl);
-      cards.forEach(c=>c.setAttribute('aria-current','false'));
-      const card = cards[i]; if(!card) return;
-      card.setAttribute('aria-current','true');
-      card.scrollIntoView({block:'nearest', behavior:'smooth'});
-    }
-
-    function playSelected(){
-      const a = audios[selectedIndex];
-      if(!a) return;
-      if(a.paused){ a.play(); } else { a.pause(); }
-    }
-
-    function wireAudio(audio){
-      const id = audio.dataset.id;
-      // 恢复进度
-      const t = storage.get('progress:'+id, 0);
-      if (t>0) audio.currentTime = t;
-      audio.addEventListener('timeupdate', ()=>{
-        if(!audio.seeking && !audio.paused){ storage.set('progress:'+id, audio.currentTime); }
-      });
-      audio.addEventListener('play', ()=>{
-        // 保证单例播放
-        audios.forEach(x=>{ if(x!==audio) x.pause(); });
-        location.hash = id;
-      });
-      // 复制链接
-      audio.closest('.card').querySelector('.copy').addEventListener('click', async ()=>{
-        try{ await navigator.clipboard.writeText(audio.src); flash(`已复制：${audio.src}`); }
-        catch{ flash('复制失败', true); }
-      });
-    }
-
-    function flash(text, danger=false){
-      const n = document.createElement('div');
-      n.textContent = text; n.style.position='fixed'; n.style.bottom='20px'; n.style.left='50%'; n.style.transform='translateX(-50%)';
-      n.style.padding='8px 12px'; n.style.border='1px solid var(--line)'; n.style.background='var(--panel)'; n.style.color = danger? 'var(--danger)': 'var(--fg)';
-      n.style.borderRadius='10px'; n.style.boxShadow='var(--shadow)'; n.style.zIndex='99';
-      document.body.appendChild(n); setTimeout(()=> n.remove(), 1800);
+    function setPage(page){
+      const url = new URL(location.href);
+      url.searchParams.set('page', page);
+      history.replaceState(null, '', url);
+      renderPage(page);
     }
 
     // 搜索
-    const search = byId('search');
-    search.addEventListener('input', ()=> render(search.value));
+    function applySearch(){
+      const q = searchInput.value.trim().toLowerCase();
+      filtered = data.episodes.filter(ep=>{
+        const hay = [ep.title, ep.summary, ep.category, ...(ep.tags||[])].join(' ').toLowerCase();
+        return hay.includes(q);
+      }).sort((a,b)=> new Date(b.date) - new Date(a.date));
+      setPage(1);
+      rebuildSidebars();
+    }
+    searchInput.addEventListener('input', applySearch);
 
-    // 导出 JSON（方便备份你的节目数据）
-    byId('exportJson').addEventListener('click', (e)=>{
-      e.preventDefault();
-      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = Object.assign(document.createElement('a'), {href:url, download:'devcast.json'});
-      a.click(); setTimeout(()=> URL.revokeObjectURL(url), 500);
-    });
+    function filterByTag(tag){ searchInput.value = tag; applySearch(); }
+    function filterByCat(cat){ searchInput.value = cat; applySearch(); }
 
-    // 顶栏控件
-    byId('themeToggle').addEventListener('click', ()=>{
-      const next = (document.body.dataset.theme==='dark')? 'light':'dark';
-      storage.set(THEME_KEY, next); applyTheme(next); 
-    });
+    // 侧边栏：分类、归档、标签云
+    function rebuildSidebars(){
+      const cats = new Map();
+      const tags = new Map();
+      const archives = new Map(); // YYYY-MM
+      filtered.forEach(ep=>{
+        if(ep.category){ cats.set(ep.category, (cats.get(ep.category)||0)+1); }
+        (ep.tags||[]).forEach(t=> tags.set(t, (tags.get(t)||0)+1));
+        const d = new Date(ep.date+ 'T00:00:00');
+        const key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+        archives.set(key, (archives.get(key)||0)+1);
+      });
+      // 分类
+      const catsEl = document.getElementById('cats');
+      catsEl.innerHTML = [...cats.entries()].sort().map(([c,n])=>`<a href="#" data-cat="${c}">${c} (${n})</a>`).join('');
+      $$('#cats a').forEach(a=> a.addEventListener('click', (e)=>{ e.preventDefault(); filterByCat(a.dataset.cat) }));
+      // 归档
+      const archEl = document.getElementById('archives');
+      archEl.innerHTML = [...archives.entries()].sort((a,b)=> a[0]<b[0]?1:-1).map(([k,n])=>{
+        const [y,m] = k.split('-');
+        return `<li><a href="#" data-ym="${k}">${y}年${m}月 (${n})</a></li>`;
+      }).join('');
+      $$('#archives a').forEach(a=> a.addEventListener('click', (e)=>{ e.preventDefault(); const ym=a.dataset.ym; searchInput.value = ym; applySearch(); }));
+      // 标签云（按频次缩放）
+      const max = Math.max(1, ...tags.values());
+      const cloud = [...tags.entries()].sort((a,b)=> b[1]-a[1]).slice(0,24).map(([t,n])=>{
+        const ratio = 0.8 + 1.2*(n/max); // 0.8x ~ 2.0x
+        return `<a href="#" data-tag="${t}" style="font-size:${(ratio*14).toFixed(0)}px">#${t}</a>`;
+      }).join(' ');
+      document.getElementById('tagCloud').innerHTML = cloud || '<span style="color:var(--muted)">暂无标签</span>';
+      $$('#tagCloud a').forEach(a=> a.addEventListener('click', (e)=>{ e.preventDefault(); filterByTag(a.dataset.tag) }));
+    }
 
-    // 热键
-    const hotkeys = byId('hotkeys');
-    const helpBtn = byId('helpBtn');
-    helpBtn.addEventListener('click', ()=>{
-      hotkeys.style.display = hotkeys.style.display==='grid' ? 'none' : 'grid';
-      hotkeys.setAttribute('aria-hidden', hotkeys.style.display==='none');
-    });
-    hotkeys.addEventListener('click', (e)=>{ if(e.target===hotkeys) helpBtn.click(); });
+    // 播放进度保存（每个音频单例播放）
+    function wireAudioProgress(audio){
+      const key = 'progress:'+ (audio.dataset.id||audio.src);
+      try{ const t = +localStorage.getItem(key); if(t>0) audio.currentTime = t; }catch{}
+      audio.addEventListener('timeupdate', ()=>{ if(!audio.paused && !audio.seeking){ try{ localStorage.setItem(key, audio.currentTime) }catch{} } });
+      audio.addEventListener('play', ()=>{ $$('#loop audio').forEach(a=>{ if(a!==audio) a.pause(); }) });
+    }
 
-    let gg = 0; // 处理 g g
-    window.addEventListener('keydown', (e)=>{
-      if(e.key === '/' && document.activeElement !== search){ e.preventDefault(); search.focus(); return; }
-      if(e.key === 't'){ applyTheme(document.body.dataset.theme==='dark' ? 'light':'dark'); storage.set(THEME_KEY, document.body.dataset.theme); }
-      if(e.shiftKey && e.key === '?'){ helpBtn.click(); return; }
-
-      const cards = $$('.card', listEl);
-      if(['j','k','Enter',' '].includes(e.key)) e.preventDefault();
-      if(e.key==='j'){ selectedIndex = Math.min(selectedIndex+1, cards.length-1); setSelected(selectedIndex); }
-      if(e.key==='k'){ selectedIndex = Math.max(selectedIndex-1, 0); setSelected(selectedIndex); }
-      if(e.key===' ' || e.key==='Enter'){ playSelected(); }
-      if(e.key==='g'){ gg = (Date.now() - gg < 400) ? 0 : Date.now(); }
-      else if(gg && e.key==='g'){ window.scrollTo({top:0, behavior:'smooth'}); gg = 0; }
-    });
+    // JSON-LD（Series）
+    (function renderLD(){
+      const ld = {
+        '@context':'https://schema.org', '@type':'PodcastSeries',
+        'name': data.site.title,
+        'description': data.site.description,
+        'url': location.href.split('#')[0],
+        'creator': data.site.author
+      };
+      document.getElementById('ld-series').textContent = JSON.stringify(ld);
+    })();
 
     // 初始化
     (function init(){
-      applyTheme(storage.get(THEME_KEY));
-      byId('year').textContent = new Date().getFullYear();
-      render('');
-      // 如果 URL 哈希指定了节目，滚动至它
-      const hash = location.hash.slice(1);
-      if(hash){ const el = byId(hash); el && el.scrollIntoView({block:'center'}); }
+      document.getElementById('year').textContent = new Date().getFullYear();
+      const url = new URL(location.href);
+      const p = +(url.searchParams.get('page')||1);
+      rebuildSidebars();
+      renderPage(p);
+      // 如果 hash 指定某一篇，滚到它
+      const hash = location.hash.slice(1); if(hash){ document.getElementById(hash)?.scrollIntoView({behavior:'smooth', block:'center'}) }
     })();
   </script>
 </body>
