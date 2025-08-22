@@ -1,8 +1,377 @@
-<p>Hello 大家好</p>
-<p>我是霸都丶傲天，这是我的个人网站。 </p>
-<p>很高兴你来到这里, 你可以在以下的网站找到我</p>
+<!doctype html>
+<html lang="zh-Hans" data-theme>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DevCast · 开发风格播客</title>
+  <meta name="description" content="一个面向开发者的极简播客主页，暗色主题、键盘快捷键、离散组件。" />
+  <meta name="theme-color" content="#0b0f12" />
+  <link rel="alternate" type="application/rss+xml" title="DevCast RSS" href="feed.xml" />
+  <style>
+    :root{
+      --bg: #0b0f12;           /* 背景 */
+      --panel: #0f1419;        /* 卡片背景 */
+      --fg: #e6edf3;           /* 正文 */
+      --muted: #9da8b3;        /* 次要文字 */
+      --line: #1b2026;         /* 细线 */
+      --accent: #00ff88;       /* 赛博绿 */
+      --accent-2: #7cffd3;     /* 备用高亮 */
+      --danger: #ff5d5d;
+      --radius: 14px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f6f8fa; --panel:#ffffff; --fg:#0e1116; --muted:#57606a; --line:#e6edf3;
+      }
+      body { background-image: radial-gradient(1000px 600px at 10% 0, #eaf2ff 0%, transparent 60%); }
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--fg);
+      font: 16px/1.6 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "JetBrains Mono", monospace;
+      letter-spacing:.2px;
+    }
+    a{color:var(--accent); text-decoration:none}
+    a:hover{color:var(--accent-2);}
 
-<ul>
-  <li> <a href="https://www.zhihu.com/people/AJLoveChina">知乎</a> </li>
-  <li> <a href="http://hejie.nigeerhuo.com">我的博客(已经不更细了,现在在知乎写文章)</a> </li>
-</ul>
+    /* 顶部导航 */
+    .nav{
+      position:sticky; top:0; z-index:10; backdrop-filter: blur(8px);
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+      border-bottom:1px solid var(--line);
+    }
+    .container{max-width:1000px; margin:0 auto; padding:16px 20px}
+    .row{display:flex; align-items:center; gap:14px}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:700}
+    .logo{
+      width:28px; height:28px; display:grid; place-items:center; border-radius:8px;
+      background: linear-gradient(135deg, var(--accent) 0%, #0affc2 100%);
+      color:#001a10; font-weight:900; box-shadow: var(--shadow);
+    }
+    .spacer{flex:1}
+    .btn{
+      border:1px solid var(--line); background:var(--panel); color:var(--fg);
+      padding:8px 12px; border-radius:10px; cursor:pointer; transition:.15s ease-in-out;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: color-mix(in srgb, var(--accent) 35%, var(--line));}
+    .btn-ghost{background:transparent}
+
+    /* 头图 */
+    .hero{border-bottom:1px solid var(--line); background:radial-gradient(750px 300px at 85% -40%, rgba(0,255,136,.07), transparent 60%)}
+    .hero h1{font-size:32px; margin:6px 0 8px}
+    .hero p{margin:0; color:var(--muted)}
+
+    /* 搜索栏 */
+    .search{display:flex; gap:10px; align-items:center; margin:16px 0 0}
+    .search input{
+      flex:1; border-radius:12px; border:1px solid var(--line); padding:12px 14px 12px 42px;
+      background:var(--panel); color:var(--fg); outline:none;
+    }
+    .search .kbd{
+      position:absolute; margin-left:10px; color:var(--muted); pointer-events:none
+    }
+
+    /* 列表 */
+    .list{display:grid; gap:14px; margin:20px 0 60px}
+    .card{
+      display:grid; grid-template-columns: 1fr; gap:10px; padding:14px; border-radius: var(--radius);
+      background:var(--panel); border:1px solid var(--line); box-shadow: var(--shadow);
+    }
+    .meta{display:flex; gap:12px; align-items:center; color:var(--muted); font-size:13px}
+    .tag{display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); margin-right:6px}
+    .title{font-size:18px; font-weight:700; margin:2px 0}
+    audio{ width:100%; height:36px; }
+    .actions{display:flex; gap:10px; align-items:center}
+
+    /* 页脚 */
+    footer{border-top:1px solid var(--line); color:var(--muted)}
+
+    /* 快捷键提示层 */
+    .hotkeys{
+      position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.6);
+    }
+    .hotkeys .panel{
+      width:min(720px, 92vw); background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px;
+    }
+    .hotkeys table{width:100%; border-collapse:collapse}
+    .hotkeys td{padding:6px 8px; border-bottom:1px dashed var(--line); color:var(--muted)}
+    .kbd-inline{display:inline-block; padding:0 6px; border:1px solid var(--line); border-bottom-width:2px; border-radius:6px; margin:0 2px}
+
+    /* 选中高亮 */
+    .card[aria-current="true"]{ outline:2px solid var(--accent); box-shadow:0 0 0 3px rgba(0,255,136,.15), var(--shadow)}
+
+    /* 小屏优化 */
+    @media (min-width: 720px){
+      .hero h1{font-size:38px}
+      .card{grid-template-columns: auto 1fr}
+      .title{font-size:20px}
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="container row">
+      <div class="brand" title="返回首页">
+        <div class="logo">▶</div>
+        <div>
+          <div>DevCast</div>
+          <small style="color:var(--muted)">开发者风格播客</small>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <button id="themeToggle" class="btn btn-ghost" title="切换主题 (t)">☾/☀</button>
+      <a class="btn" href="feed.xml" title="订阅 RSS">RSS</a>
+      <button id="helpBtn" class="btn btn-ghost" title="快捷键 (Shift + /)">?</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>你好，开发者 👋</h1>
+      <p>这是一个不依赖任何框架的静态播客首页：暗色优先、键盘可操作、只有一份 <code>index.html</code>。把它放进 GitHub Pages 即可上线。</p>
+      <div class="search">
+        <span class="kbd">/</span>
+        <input id="search" type="search" placeholder="搜索：标题、标签或摘要（按 / 聚焦）" autocomplete="off" />
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <div id="list" class="list" role="list" aria-label="节目列表"></div>
+  </main>
+
+  <footer class="container" style="padding-bottom:60px">
+    <p>© <span id="year"></span> DevCast · 以 <span style="color:var(--accent)">开发者体验</span> 为中心构建。
+      | <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+      | <a href="#" id="exportJson">导出 JSON</a>
+    </p>
+  </footer>
+
+  <!-- 快捷键帮助 -->
+  <div id="hotkeys" class="hotkeys" aria-hidden="true">
+    <div class="panel">
+      <h3 style="margin:6px 0 10px">键盘快捷键</h3>
+      <table>
+        <tr><td><span class="kbd-inline">/</span></td><td>聚焦搜索</td></tr>
+        <tr><td><span class="kbd-inline">j</span> / <span class="kbd-inline">k</span></td><td>上下选择节目</td></tr>
+        <tr><td><span class="kbd-inline">空格</span> 或 <span class="kbd-inline">Enter</span></td><td>播放/暂停选中节目</td></tr>
+        <tr><td><span class="kbd-inline">t</span></td><td>切换深浅色</td></tr>
+        <tr><td><span class="kbd-inline">g</span> <span class="kbd-inline">g</span></td><td>回到顶部</td></tr>
+        <tr><td><span class="kbd-inline">Shift</span> + <span class="kbd-inline">/</span></td><td>显示/关闭本帮助</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 你的播客数据：修改即可个性化（也可替换为外部 JSON 再用 fetch 加载） -->
+  <script id="data" type="application/json">{
+    "site": {
+      "title": "DevCast",
+      "subtitle": "开发者风格播客",
+      "description": "谈技术、聊产品，也聊作为开发者的职业思考。",
+      "author": "Your Name",
+      "links": { "github": "https://github.com/yourname" }
+    },
+    "episodes": [
+      {
+        "id": "ep-001",
+        "title": "Hello, World：为什么是另一个播客？",
+        "date": "2025-01-10",
+        "duration": "12:34",
+        "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        "summary": "开场白：定位、选题和我们想传递的价值。",
+        "tags": ["intro", "meta"]
+      },
+      {
+        "id": "ep-002",
+        "title": "从脚手架到DX：开发体验的四个层次",
+        "date": "2025-02-02",
+        "duration": "28:15",
+        "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+        "summary": "聊聊CLI、模版、DevServer、热更新与错误反馈。",
+        "tags": ["dx", "tooling"]
+      },
+      {
+        "id": "ep-003",
+        "title": "边界与成本：何时该“写个小服务”？",
+        "date": "2025-05-18",
+        "duration": "36:42",
+        "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
+        "summary": "工程实践中的复用、封装与SLA思维。",
+        "tags": ["architecture", "practice"]
+      }
+    ]
+  }</script>
+
+  <script>
+    // ===== 工具函数 =====
+    const $ = (sel, el=document) => el.querySelector(sel);
+    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+    const fmt = (d) => new Date(d + 'T00:00:00').toLocaleDateString(undefined, {year:'numeric', month:'short', day:'numeric'});
+    const byId = id => document.getElementById(id);
+    const storage = {
+      get(k, def){ try { return JSON.parse(localStorage.getItem(k)) ?? def } catch { return def } },
+      set(k, v){ localStorage.setItem(k, JSON.stringify(v)) }
+    };
+
+    // ===== 主题切换 =====
+    const THEME_KEY = 'devcast.theme';
+    function applyTheme(theme){
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark = theme ? (theme==='dark') : prefersDark;
+      document.documentElement.toggleAttribute('data-theme', true);
+      document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+      document.body.dataset.theme = isDark ? 'dark' : 'light';
+    }
+
+    // ===== 渲染节目列表 =====
+    const data = JSON.parse(byId('data').textContent);
+    document.title = `${data.site.title} · 开发风格播客`;
+    $('.brand div:first-child + small').textContent = data.site.subtitle;
+
+    const listEl = byId('list');
+    let selectedIndex = 0;
+    let audios = [];
+
+    function episodeCard(ep){
+      const el = document.createElement('article');
+      el.className = 'card';
+      el.id = ep.id;
+      el.setAttribute('role','listitem');
+      el.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:6px">
+          <div class="meta">
+            <span title="发布日期">🗓️ ${fmt(ep.date)}</span>
+            <span title="时长">⏱️ ${ep.duration}</span>
+            <span class="tags">${(ep.tags||[]).map(t=>`<span class=tag>#${t}</span>`).join('')}</span>
+          </div>
+          <h3 class="title">${ep.title}</h3>
+          <p style="margin:0; color:var(--muted)">${ep.summary||''}</p>
+          <div class="actions">
+            <audio preload="none" controls src="${ep.audio}" data-id="${ep.id}"></audio>
+            <button class="btn btn-ghost copy" title="复制音频地址">复制链接</button>
+            <a class="btn" href="${ep.audio}" download>下载</a>
+          </div>
+        </div>
+      `;
+      return el;
+    }
+
+    function render(filter=''){
+      listEl.innerHTML = '';
+      const q = filter.trim().toLowerCase();
+      const filtered = data.episodes.filter(ep=>{
+        if(!q) return true;
+        const inText = [ep.title, ep.summary, ...(ep.tags||[])].join(' ').toLowerCase();
+        return inText.includes(q);
+      });
+      filtered.sort((a,b)=> new Date(b.date) - new Date(a.date));
+      filtered.forEach(ep=> listEl.appendChild(episodeCard(ep)));
+      audios = $$('audio', listEl);
+      audios.forEach(wireAudio);
+      if(filtered.length){
+        const hashId = location.hash.slice(1);
+        const idx = filtered.findIndex(e=> e.id===hashId);
+        selectedIndex = Math.max(0, idx);
+        setSelected(selectedIndex);
+      }
+    }
+
+    function setSelected(i){
+      const cards = $$('.card', listEl);
+      cards.forEach(c=>c.setAttribute('aria-current','false'));
+      const card = cards[i]; if(!card) return;
+      card.setAttribute('aria-current','true');
+      card.scrollIntoView({block:'nearest', behavior:'smooth'});
+    }
+
+    function playSelected(){
+      const a = audios[selectedIndex];
+      if(!a) return;
+      if(a.paused){ a.play(); } else { a.pause(); }
+    }
+
+    function wireAudio(audio){
+      const id = audio.dataset.id;
+      // 恢复进度
+      const t = storage.get('progress:'+id, 0);
+      if (t>0) audio.currentTime = t;
+      audio.addEventListener('timeupdate', ()=>{
+        if(!audio.seeking && !audio.paused){ storage.set('progress:'+id, audio.currentTime); }
+      });
+      audio.addEventListener('play', ()=>{
+        // 保证单例播放
+        audios.forEach(x=>{ if(x!==audio) x.pause(); });
+        location.hash = id;
+      });
+      // 复制链接
+      audio.closest('.card').querySelector('.copy').addEventListener('click', async ()=>{
+        try{ await navigator.clipboard.writeText(audio.src); flash(`已复制：${audio.src}`); }
+        catch{ flash('复制失败', true); }
+      });
+    }
+
+    function flash(text, danger=false){
+      const n = document.createElement('div');
+      n.textContent = text; n.style.position='fixed'; n.style.bottom='20px'; n.style.left='50%'; n.style.transform='translateX(-50%)';
+      n.style.padding='8px 12px'; n.style.border='1px solid var(--line)'; n.style.background='var(--panel)'; n.style.color = danger? 'var(--danger)': 'var(--fg)';
+      n.style.borderRadius='10px'; n.style.boxShadow='var(--shadow)'; n.style.zIndex='99';
+      document.body.appendChild(n); setTimeout(()=> n.remove(), 1800);
+    }
+
+    // 搜索
+    const search = byId('search');
+    search.addEventListener('input', ()=> render(search.value));
+
+    // 导出 JSON（方便备份你的节目数据）
+    byId('exportJson').addEventListener('click', (e)=>{
+      e.preventDefault();
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = Object.assign(document.createElement('a'), {href:url, download:'devcast.json'});
+      a.click(); setTimeout(()=> URL.revokeObjectURL(url), 500);
+    });
+
+    // 顶栏控件
+    byId('themeToggle').addEventListener('click', ()=>{
+      const next = (document.body.dataset.theme==='dark')? 'light':'dark';
+      storage.set(THEME_KEY, next); applyTheme(next); 
+    });
+
+    // 热键
+    const hotkeys = byId('hotkeys');
+    const helpBtn = byId('helpBtn');
+    helpBtn.addEventListener('click', ()=>{
+      hotkeys.style.display = hotkeys.style.display==='grid' ? 'none' : 'grid';
+      hotkeys.setAttribute('aria-hidden', hotkeys.style.display==='none');
+    });
+    hotkeys.addEventListener('click', (e)=>{ if(e.target===hotkeys) helpBtn.click(); });
+
+    let gg = 0; // 处理 g g
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === '/' && document.activeElement !== search){ e.preventDefault(); search.focus(); return; }
+      if(e.key === 't'){ applyTheme(document.body.dataset.theme==='dark' ? 'light':'dark'); storage.set(THEME_KEY, document.body.dataset.theme); }
+      if(e.shiftKey && e.key === '?'){ helpBtn.click(); return; }
+
+      const cards = $$('.card', listEl);
+      if(['j','k','Enter',' '].includes(e.key)) e.preventDefault();
+      if(e.key==='j'){ selectedIndex = Math.min(selectedIndex+1, cards.length-1); setSelected(selectedIndex); }
+      if(e.key==='k'){ selectedIndex = Math.max(selectedIndex-1, 0); setSelected(selectedIndex); }
+      if(e.key===' ' || e.key==='Enter'){ playSelected(); }
+      if(e.key==='g'){ gg = (Date.now() - gg < 400) ? 0 : Date.now(); }
+      else if(gg && e.key==='g'){ window.scrollTo({top:0, behavior:'smooth'}); gg = 0; }
+    });
+
+    // 初始化
+    (function init(){
+      applyTheme(storage.get(THEME_KEY));
+      byId('year').textContent = new Date().getFullYear();
+      render('');
+      // 如果 URL 哈希指定了节目，滚动至它
+      const hash = location.hash.slice(1);
+      if(hash){ const el = byId(hash); el && el.scrollIntoView({block:'center'}); }
+    })();
+  </script>
+</body>
+</html>
